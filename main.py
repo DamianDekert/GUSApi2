@@ -17,10 +17,6 @@ def validate_nip(nip_str):
 
 def getData(userNip, path="", event=None) :
 
-    # 8951825431
-    # 8862608287
-    # 8861065620
-
     for output in outputs.values():
         output.delete("1.0", END)
 
@@ -44,46 +40,66 @@ def getData(userNip, path="", event=None) :
 
         if len(sys.argv) > 1 and sys.argv[2]=="--S":
             outputs['nazwa'] = entities[0].Nazwa
-            if entities[0].NrLokalu == '':
-                outputs['adres'] = (entities[0].Ulica + ' ' + str(entities[0].NrNieruchomosci))
-            else:
-                outputs['adres'] = (entities[0].Ulica + ' ' + str(entities[0].NrNieruchomosci) + ' / ' + str(entities[0].NrLokalu))
+            try:
+                if entities[0].NrLokalu == '':
+                    outputs['adres'] = entities[0].Ulica + ' ' + str(entities[0].NrNieruchomosci)
+                else:
+                    outputs['adres'] = entities[0].Ulica + ' ' + str(entities[0].NrNieruchomosci) + ' / ' + str(entities[0].NrLokalu)
+            except AttributeError:
+                if entities[0].NrNieruchomosci != '' and entities[0].NrLokalu != '':
+                    outputs['adres'] = entities[0].Ulica + ' ' + str(entities[0].NrNieruchomosci) + ' / ' + str(entities[0].NrLokalu)
+                elif entities[0].NrNieruchomosci != '':
+                    outputs['miasto'] = entities[0].Miejscowosc + " " + str(entities[0].NrNieruchomosci)
+                else:
+                    outputs['adres'] =  ""
+            else: 
+                outputs['miasto'] = entities[0].Miejscowosc
+            finally:
 
-            outputs['kodPocztowy'] = entities[0].KodPocztowy
-
-            outputs['miasto'] = entities[0].Miejscowosc
-
-            outputs['wojewodztwo'] = entities[0].Wojewodztwo
-
-            outputs['regon'] = entities[0].Regon
-
+                outputs['kodPocztowy'] = entities[0].KodPocztowy
+    
+                outputs['miasto'] = entities[0].Miejscowosc
+    
+                outputs['wojewodztwo'] = entities[0].Wojewodztwo
+    
+                outputs['regon'] = entities[0].Regon
+    
         else:
             
             outputs['nazwa'].insert(INSERT, entities[0].Nazwa)
 
-            if entities[0].NrLokalu == '':
-                outputs['adres'].insert(INSERT, entities[0].Ulica + ' ' + str(entities[0].NrNieruchomosci))
-            else:
-                outputs['adres'].insert(INSERT, entities[0].Ulica + ' ' + str(entities[0].NrNieruchomosci) + ' / ' + str(entities[0].NrLokalu))
+            try:
+                if entities[0].NrLokalu == '':
+                    outputs['adres'].insert(INSERT, entities[0].Ulica + ' ' + str(entities[0].NrNieruchomosci))    
+                else:
+                    outputs['adres'].insert(INSERT, entities[0].Ulica + ' ' + str(entities[0].NrNieruchomosci) + ' / ' + str(entities[0].NrLokalu))
+            except AttributeError:
+                if entities[0].NrNieruchomosci != '' and entities[0].NrLokalu != '':
+                    outputs['adres'].insert(INSERT, entities[0].Ulica + ' ' + str(entities[0].NrNieruchomosci) + ' / ' + str(entities[0].NrLokalu))
+                elif entities[0].NrNieruchomosci != '':
+                    outputs['miasto'].insert(INSERT, entities[0].Miejscowosc + " " + str(entities[0].NrNieruchomosci))
+                else:
+                    outputs['adres'].insert(INSERT, "")
+            else: 
+                outputs['miasto'].insert(INSERT, entities[0].Miejscowosc)
+            finally:
 
-            outputs['kodPocztowy'].insert(INSERT, entities[0].KodPocztowy)
-
-            outputs['miasto'].insert(INSERT, entities[0].Miejscowosc)
-
-            outputs['wojewodztwo'].insert(INSERT, entities[0].Wojewodztwo)
-
-            outputs['regon'].insert(INSERT, entities[0].Regon)
-
-        with open(path + sys.argv[1] + ".ini", "w") as f:
-            f.write("[DANE]\n")
-            if len(sys.argv) > 1 and sys.argv[2]=="--S":
-                for k, v in outputs.items():
-                    f.writelines(k + "=" + str(v) + "\n")
-            else:
-                for k, v in outputs.items():
-                    f.write(str(k) + "=" + str(v.get("1.0",END)))
+                outputs['kodPocztowy'].insert(INSERT, entities[0].KodPocztowy)
+    
+                outputs['wojewodztwo'].insert(INSERT, entities[0].Wojewodztwo)
+    
+                outputs['regon'].insert(INSERT, entities[0].Regon)
+    
+                with open(path + userNip + ".ini", "w") as f:
+                    f.write("[DANE]\n")
+                    if len(sys.argv) > 1 and sys.argv[2]=="--S":
+                        for k, v in outputs.items():
+                            f.writelines(k + "=" + str(v) + "\n")
+                    else:
+                        for k, v in outputs.items():
+                            f.write(str(k) + "=" + str(v.get("1.0",END)))
                 
-def do_popup(event):
+def do_popup(event, m):
     '''Burger menu'''
     try:
         m.tk_popup(event.x_root, event.y_root)
@@ -91,10 +107,13 @@ def do_popup(event):
         m.grab_release()
 
 def copy_text(root):
-	selected = root.selection_get()
-	root.clipboard_clear()
-	root.clipboard_append(selected)
-
+    try:
+        selected = root.selection_get()
+        root.clipboard_clear()
+        root.clipboard_append(selected)
+    except:
+        root.clipboard_clear()
+            
 def guiApp(outputs):
     '''Window version with Tkinter'''
     outputFont = 13 
@@ -129,11 +148,9 @@ def guiApp(outputs):
     logolabel = customtkinter.CTkLabel(master=frame, image=img, text="")
     logolabel.grid(column=0, row=0, sticky=W, padx=10, pady=10)
 
-    # L = Label(root, text="Right-click to display menu", width=40, height=20)
-    # L.pack()
     m = Menu(root, tearoff=False)
     m.add_command(label="Kopiuj", command = lambda: copy_text(root))
-    root.bind("<Button-3>", do_popup)
+    root.bind("<Button-3>", lambda event:do_popup(event, m))
 
     Mainlabel = customtkinter.CTkLabel(master=frame, text='Wyszukiwarka danych', font=("Roboto", 24))
     Mainlabel.grid(columnspan=4, row=0, ipady = 5)
@@ -143,8 +160,8 @@ def guiApp(outputs):
 
     userNipEntry = customtkinter.CTkEntry(master=frame, placeholder_text="Wpisz NIP")
     userNipEntry.grid(column=1, row=1, sticky=W, pady=15)
-    button = customtkinter.CTkButton(master=frame, text='Pobierz dane z GUS', command=lambda: getData(userNipEntry.get()))
-    root.bind('<Return>', lambda event: getData(userNipEntry.get(), event))
+    button = customtkinter.CTkButton(master=frame, text='Pobierz dane z GUS', command=lambda: getData(userNipEntry.get(),""))
+    root.bind('<Return>', lambda event: getData(userNipEntry.get(),"", event))
     button.grid(column=2, row=1, sticky=W)
 
     # LAYOUT----------------------------------------------------------------------------------------------------------------
@@ -227,11 +244,13 @@ def resource_path(relative_path):
 '''--------------------------------------------------------------------------------------------------------------'''
 '''Get data do poprawy zapis do pliku powininen być w innej funkcji'''
 '''Guid app do poprawy warunek parametrów jeżeli --R powinien być sprawdzany w main'''
-'''--S   --->     Parametr  Save działanie programu ma polegać na zapisie danych do zewnętrznego pliku'''
+'''--S   --->     Parametr  Save działanie programu ma polegać na zapisie danych do zewnętrznego pliku bez GUI'''
 '''--R   --->     Parametr Read działanie programu ma polegać na uruchumieniu GUI z wypełnionym już numerem NIP oraz danymi w programie'''
 '''W przypadku --R edycja parametru NIPu oraz przycisk mają nie być widoczne dla użytkonika'''
 '''4 parametrem w wywołaniu programu jest w domyśle ściężka do pliku wraz z nazwą użytkownika, po której NIP dodawny jest automatycznie'''
 '''Wyjściowy format pliku to .ini'''
+
+# 9151525484
 
 outputs={}
 consoleValues = len(sys.argv)
