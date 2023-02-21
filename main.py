@@ -224,16 +224,24 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 '''Two version of app first with GUI second which only save data in output file without GUI'''
-
-'''Get data do poprawy zapis powininen być w innej funkcji'''
-'''Guid app do poprawy warunek parametrów powinien być sprawdzany w main'''
+'''--------------------------------------------------------------------------------------------------------------'''
+'''Get data do poprawy zapis do pliku powininen być w innej funkcji'''
+'''Guid app do poprawy warunek parametrów jeżeli --R powinien być sprawdzany w main'''
+'''--S   --->     Parametr  Save działanie programu ma polegać na zapisie danych do zewnętrznego pliku'''
+'''--R   --->     Parametr Read działanie programu ma polegać na uruchumieniu GUI z wypełnionym już numerem NIP oraz danymi w programie'''
+'''W przypadku --R edycja parametru NIPu oraz przycisk mają nie być widoczne dla użytkonika'''
+'''4 parametrem w wywołaniu programu jest w domyśle ściężka do pliku wraz z nazwą użytkownika, po której NIP dodawny jest automatycznie'''
+'''Wyjściowy format pliku to .ini'''
 
 outputs={}
 consoleValues = len(sys.argv)
 
-if consoleValues == 3 and sys.argv[2]=="--S":
-
-    getData(sys.argv[1])
+if consoleValues == 3:
+    
+    if sys.argv[2] == "--S":
+        getData(sys.argv[1])
+    elif sys.argv[2] == "--R":
+        guiApp(outputs)
 
 if consoleValues == 4 and sys.argv[2]=="--S":
         # path = "H:\\Czynsze\\TEMP\\" 
