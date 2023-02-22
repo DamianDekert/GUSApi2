@@ -58,8 +58,6 @@ def getData(userNip, path="", event=None) :
 
                 outputs['kodPocztowy'] = entities[0].KodPocztowy
     
-                outputs['miasto'] = entities[0].Miejscowosc
-    
                 outputs['wojewodztwo'] = entities[0].Wojewodztwo
     
                 outputs['regon'] = entities[0].Regon
@@ -90,14 +88,14 @@ def getData(userNip, path="", event=None) :
     
                 outputs['regon'].insert(INSERT, entities[0].Regon)
     
-                with open(path + userNip + ".ini", "w") as f:
-                    f.write("[DANE]\n")
-                    if len(sys.argv) > 1 and sys.argv[2]=="--S":
-                        for k, v in outputs.items():
-                            f.writelines(k + "=" + str(v) + "\n")
-                    else:
-                        for k, v in outputs.items():
-                            f.write(str(k) + "=" + str(v.get("1.0",END)))
+    with open(path + userNip + ".ini", "w") as f:
+        f.write("[DANE]\n")
+        if len(sys.argv) > 1 and sys.argv[2]=="--S":
+            for k, v in outputs.items():
+                f.writelines(k + "=" + str(v) + "\n")
+        else:
+            for k, v in outputs.items():
+                f.write(str(k) + "=" + str(v.get("1.0",END)))
                 
 def do_popup(event, m):
     '''Burger menu'''
