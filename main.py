@@ -113,11 +113,10 @@ def copy_text(root):
         root.clipboard_clear()
             
 def guiApp(outputs):
-    '''Window version with Tkinter'''
+    '''GUI version with Tkinter'''
     outputFont = 13 
     outpuPadding = 8
     outputTextWeight = 600
-    # outputs = {}
 
     customtkinter.set_appearance_mode('system')
     customtkinter.set_default_color_theme('dark-blue')
@@ -228,7 +227,7 @@ def guiApp(outputs):
     root.mainloop()
 
 def resource_path(relative_path):
-    '''Set a PATH to png to reslove problem with png direction'''
+    '''Set a PATH to png to resolve problem with png direction'''
     """ Get absolute path to resource, works for dev and for PyInstaller """
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
@@ -240,6 +239,7 @@ def resource_path(relative_path):
 
 '''Two version of app first with GUI second which only save data in output file without GUI'''
 '''--------------------------------------------------------------------------------------------------------------'''
+'''TO DO'''
 '''Get data do poprawy zapis do pliku powininen być w innej funkcji'''
 '''Guid app do poprawy warunek parametrów jeżeli --R powinien być sprawdzany w main'''
 '''--S   --->     Parametr  Save działanie programu ma polegać na zapisie danych do zewnętrznego pliku bez GUI'''
@@ -248,7 +248,6 @@ def resource_path(relative_path):
 '''4 parametrem w wywołaniu programu jest w domyśle ściężka do pliku wraz z nazwą użytkownika, po której NIP dodawny jest automatycznie'''
 '''Wyjściowy format pliku to .ini'''
 
-# 9151525484
 
 outputs={}
 consoleValues = len(sys.argv)
@@ -261,7 +260,6 @@ if consoleValues == 3:
         guiApp(outputs)
 
 if consoleValues == 4 and sys.argv[2]=="--S":
-        # path = "H:\\Czynsze\\TEMP\\" 
         path = sys.argv[3]
         getData(sys.argv[1], path)
 
